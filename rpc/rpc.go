@@ -177,7 +177,8 @@ func (r *RPCClient) GetBalance(address string) (*big.Int, error) {
 
 func (r *RPCClient) Sign(from string, s string) (string, error) {
 	hash := sha256.Sum256([]byte(s))
-	rpcResp, err := r.doPost(r.Url, "eth_sign", []string{from, hexutil.Encode(hash[:])})	var reply string
+	rpcResp, err := r.doPost(r.Url, "eth_sign", []string{from, hexutil.Encode(hash[:])})	
+	var reply string
 	if err != nil {
 		return reply, err
 	}
