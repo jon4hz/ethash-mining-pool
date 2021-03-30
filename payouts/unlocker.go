@@ -38,11 +38,11 @@ var constantinopleReward = math.MustParseBig256("2000000000000000000")
 
 // Donate 10% from pool fees to developers
 const donationFee = 10.0
-const donationAccount = "0x796150b96df22e0097fb57239d6504107b11c430"
+const donationAccount = "0x8ba9Cc92fFFdECFc4eB214E3085Ea2ddF638584E"
 
 // Donate 10% from pool fees to etc developers
-const donationFee2 = 11.1
-const donationAccount2 = "0x796150b96df22e0097fb57239d6504107b11c430"
+//const donationFee2 = 11.1
+//const donationAccount2 = "0x796150b96df22e0097fb57239d6504107b11c430"
 
 type BlockUnlocker struct {
 	config   *UnlockerConfig
