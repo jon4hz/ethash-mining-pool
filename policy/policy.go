@@ -298,11 +298,6 @@ func (s *PolicyServer) InWhiteList(ip string) bool {
 func (s *PolicyServer) doBan(ip string) {
 	set, timeout := s.config.Banning.IPSet, s.config.Banning.Timeout
 	cmd := fmt.Sprintf("sudo ipset add %s %s timeout %v -!", set, ip, timeout)
-	/*out, err := exec.Command(ipsetPath, "add", s.Name, entry, "timeout", strconv.Itoa(timeout), "-exist").CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("error adding entry %s: %v (%s)", entry, err, out)
-	}
-	*/
 
 	args := strings.Fields(cmd)
 	head := args[0]
@@ -317,11 +312,6 @@ func (s *PolicyServer) doBan(ip string) {
 	} else {
 		log.Println("COMMAND OUTPUT :" + string(output))
 	}
-
-	/*if err != nil {
-		log.Printf("CMD Error: %s", err)
-		fmt.Println(fmt.Sprint(err) + ": " + err.String())
-	}*/
 }
 
 func (x *Stats) heartbeat() {
