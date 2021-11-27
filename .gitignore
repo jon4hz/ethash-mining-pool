@@ -6,6 +6,3 @@ testnet.json
 /build/bin/
 /www/nbproject/private/
 /.idea/
-
-go.mod
-go.sum

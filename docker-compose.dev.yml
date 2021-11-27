@@ -1,0 +1,7 @@
+version: "3.7"
+services:
+  ethereum-pool:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      
