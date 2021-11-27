@@ -18,21 +18,21 @@ import (
 const txCheckInterval = 5 * time.Second
 
 type PayoutsConfig struct {
-	Enabled      bool   `json:"enabled"`
-	RequirePeers int64  `json:"requirePeers"`
+	TxGas        string `json:"nwTxGas"`
+	GasPrice     string `json:"gasPrice"`
 	Interval     string `json:"interval"`
 	Daemon       string `json:"daemon"`
 	Timeout      string `json:"timeout"`
 	Address      string `json:"address"`
 	Gas          string `json:"gas"`
-	GasPrice     string `json:"gasPrice"`
-	AutoGas      bool   `json:"autoGas"`
-	KeepNwFees   bool   `json:"keepNwFees"`
-	TxGas        string `json:"nwTxGas"`
 	TxGasPrice   string `json:"nwTxGasPrice"`
+	RequirePeers int64  `json:"requirePeers"`
 	// In Shannon
-	Threshold int64 `json:"threshold"`
-	BgSave    bool  `json:"bgsave"`
+	Threshold  int64 `json:"threshold"`
+	Enabled    bool  `json:"enabled"`
+	KeepNwFees bool  `json:"keepNwFees"`
+	AutoGas    bool  `json:"autoGas"`
+	BgSave     bool  `json:"bgsave"`
 }
 
 func (p PayoutsConfig) GasHex() string {

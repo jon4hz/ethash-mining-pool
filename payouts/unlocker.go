@@ -16,16 +16,16 @@ import (
 )
 
 type UnlockerConfig struct {
-	Enabled        bool    `json:"enabled"`
-	PoolFee        float64 `json:"poolFee"`
+	Interval       string  `json:"interval"`
 	PoolFeeAddress string  `json:"poolFeeAddress"`
-	Donate         bool    `json:"donate"`
+	Timeout        string  `json:"timeout"`
+	Daemon         string  `json:"daemon"`
 	Depth          int64   `json:"depth"`
 	ImmatureDepth  int64   `json:"immatureDepth"`
+	PoolFee        float64 `json:"poolFee"`
+	Enabled        bool    `json:"enabled"`
 	KeepTxFees     bool    `json:"keepTxFees"`
-	Interval       string  `json:"interval"`
-	Daemon         string  `json:"daemon"`
-	Timeout        string  `json:"timeout"`
+	Donate         bool    `json:"donate"`
 }
 
 const (

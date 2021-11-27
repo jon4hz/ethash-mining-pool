@@ -17,16 +17,16 @@ import (
 )
 
 type ApiConfig struct {
-	Enabled              bool   `json:"enabled"`
+	LuckWindow           []int  `json:"luckWindow"`
 	Listen               string `json:"listen"`
 	StatsCollectInterval string `json:"statsCollectInterval"`
 	HashrateWindow       string `json:"hashrateWindow"`
 	HashrateLargeWindow  string `json:"hashrateLargeWindow"`
-	LuckWindow           []int  `json:"luckWindow"`
+	PurgeInterval        string `json:"purgeInterval"`
 	Payments             int64  `json:"payments"`
 	Blocks               int64  `json:"blocks"`
+	Enabled              bool   `json:"enabled"`
 	PurgeOnly            bool   `json:"purgeOnly"`
-	PurgeInterval        string `json:"purgeInterval"`
 }
 
 type ApiServer struct {
