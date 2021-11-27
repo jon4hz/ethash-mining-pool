@@ -106,11 +106,8 @@ func Start(cfg *Config, storage *storage.RedisClient) *PolicyServer {
 
 func (s *PolicyServer) startPolicyWorker() {
 	go func() {
-		for {
-			select {
-			case ip := <-s.banChannel:
-				s.doBan(ip)
-			}
+		for ip := range s.banChannel {
+			s.doBan(ip)
 		}
 	}()
 }
@@ -224,7 +221,7 @@ func (s *PolicyServer) ApplySharePolicy(ip string, validShare bool) bool {
 	x := s.Get(ip)
 	x.Lock()
 
-	//TODO: Remove banning for invalid shares(Apply limit)
+	// TODO: Remove banning for invalid shares(Apply limit)
 	if validShare {
 		x.ValidShares++
 		if s.config.Limits.Enabled {
@@ -247,7 +244,7 @@ func (s *PolicyServer) ApplySharePolicy(ip string, validShare bool) bool {
 	ratio := invalidShares / validShares
 
 	if ratio >= s.config.Banning.InvalidPercent/100.0 {
-		//TODO: Remove IP Banning
+		// TODO: Remove IP Banning
 		s.forceBan(x, ip)
 		return false
 	}

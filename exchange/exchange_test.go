@@ -11,21 +11,16 @@ func TestMain(m *testing.M) {
 }
 
 func TestGetData(t *testing.T) {
-
 	r := NewRestClient("Test", "https://api.coinmarketcap.com/v1/ticker/?convert=INR", "15s")
 	Result, err := r.GetData()
-
 	if err != nil {
-		t.Errorf("Error occured : %v", err)
+		t.Errorf("Error occurred : %v", err)
 		return
 	}
 
 	for k, v := range Result {
-
-		fmt.Println("Key: %s , Value, %s", k, v)
-
+		fmt.Printf("Key: %d , Value, %v\n", k, v)
 	}
-
 }
 
 func BytesToString(data []byte) string {

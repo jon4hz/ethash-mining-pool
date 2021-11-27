@@ -177,7 +177,7 @@ func (r *RPCClient) GetBalance(address string) (*big.Int, error) {
 
 func (r *RPCClient) Sign(from string, s string) (string, error) {
 	hash := sha256.Sum256([]byte(s))
-	rpcResp, err := r.doPost(r.Url, "eth_sign", []string{from, hexutil.Encode(hash[:])})	
+	rpcResp, err := r.doPost(r.Url, "eth_sign", []string{from, hexutil.Encode(hash[:])})
 	var reply string
 	if err != nil {
 		return reply, err
@@ -187,7 +187,7 @@ func (r *RPCClient) Sign(from string, s string) (string, error) {
 		return reply, err
 	}
 	if util.IsZeroHash(reply) {
-		err = errors.New("Can't sign message, perhaps account is locked")
+		err = errors.New("can't sign message, perhaps account is locked")
 	}
 	return reply, err
 }
@@ -252,6 +252,9 @@ func (r *RPCClient) doPost(url string, method string, params interface{}) (*JSON
 	data, _ := json.Marshal(jsonReq)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(data))
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Set("Content-Length", (string)(len(data)))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")

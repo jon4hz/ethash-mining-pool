@@ -28,7 +28,6 @@ type BlockTemplate struct {
 	Difficulty           *big.Int
 	Height               uint64
 	GetPendingBlockCache *rpc.GetBlockReplyPart
-	nonces               map[string]bool
 	headers              map[string]heightDiffPair
 }
 
@@ -60,7 +59,10 @@ func (s *ProxyServer) fetchBlockTemplate() {
 	}
 	diff := util.TargetHexToDiff(reply[2])
 	height, err := strconv.ParseUint(strings.Replace(reply[3], "0x", "", -1), 16, 64)
-
+	if err != nil {
+		log.Printf("Can't parse block number: %v", err)
+		return
+	}
 	pendingReply := &rpc.GetBlockReplyPart{
 		Difficulty: util.ToHex(s.config.Proxy.Difficulty),
 		Number:     reply[3],

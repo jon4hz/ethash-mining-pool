@@ -10,9 +10,11 @@ import (
 )
 
 // Allow only lowercase hexadecimal with 0x prefix
-var noncePattern = regexp.MustCompile("^0x[0-9a-f]{16}$")
-var hashPattern = regexp.MustCompile("^0x[0-9a-f]{64}$")
-var workerPattern = regexp.MustCompile("^[0-9a-zA-Z-_]{1,8}$")
+var (
+	noncePattern  = regexp.MustCompile("^0x[0-9a-f]{16}$")
+	hashPattern   = regexp.MustCompile("^0x[0-9a-f]{64}$")
+	workerPattern = regexp.MustCompile("^[0-9a-zA-Z-_]{1,8}$")
+)
 
 // Stratum
 func (s *ProxyServer) handleLoginRPC(cs *Session, params []string, id string) (bool, *ErrorReply) {
@@ -20,8 +22,8 @@ func (s *ProxyServer) handleLoginRPC(cs *Session, params []string, id string) (b
 		return false, &ErrorReply{Code: -1, Message: "Invalid params"}
 	}
 
-	//Parse email Id here
-	//TODO: LOGIN CHECK OF VALID ID
+	// Parse email Id here
+	// TODO: LOGIN CHECK OF VALID ID
 	login := strings.ToLower(params[0])
 	if !util.IsValidHexAddress(login) {
 		return false, &ErrorReply{Code: -1, Message: "Invalid login"}

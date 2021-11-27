@@ -23,7 +23,7 @@ func (s *ProxyServer) ListenSSLTCP() {
 
 	cert, err := tls.LoadX509KeyPair(s.config.Proxy.StratumSSL.CertFile, s.config.Proxy.StratumSSL.CertKey)
 	if err != nil {
-		log.Fatalf("Error loading certificate. ", err)
+		log.Fatalf("error loading certificate: %s", err)
 	}
 
 	tlsCfg := &tls.Config{Certificates: []tls.Certificate{cert}}
@@ -39,7 +39,7 @@ func (s *ProxyServer) ListenSSLTCP() {
 	defer server.Close()
 
 	log.Printf("SSL Stratum listening on %s", s.config.Proxy.StratumSSL.Listen)
-	var accept = make(chan int, s.config.Proxy.StratumSSL.MaxConn)
+	accept := make(chan int, s.config.Proxy.StratumSSL.MaxConn)
 	n := 0
 
 	for {
@@ -47,7 +47,7 @@ func (s *ProxyServer) ListenSSLTCP() {
 		if err != nil {
 			continue
 		}
-		//conn.SetKeepAlive(true)
+		// conn.SetKeepAlive(true)
 
 		ip, _, _ := net.SplitHostPort(sslconn.RemoteAddr().String())
 
@@ -179,14 +179,8 @@ func (cs *Session) sendSSLTCPError(id json.RawMessage, reply *ErrorReply) error 
 	return errors.New(reply.Message)
 }
 
-func (self *ProxyServer) setSSLDeadline(sslconn net.Conn) {
-	sslconn.SetDeadline(time.Now().Add(self.timeout))
-}
-
-func (s *ProxyServer) registerSSLSession(cs *Session) {
-	s.sessionsMu.Lock()
-	defer s.sessionsMu.Unlock()
-	s.sessions[cs] = struct{}{}
+func (p *ProxyServer) setSSLDeadline(sslconn net.Conn) {
+	sslconn.SetDeadline(time.Now().Add(p.timeout))
 }
 
 func (s *ProxyServer) removeSSLSession(cs *Session) {
@@ -212,7 +206,7 @@ func (s *ProxyServer) broadcastSSLNewJobs() {
 	bcast := make(chan int, 1024)
 	n := 0
 
-	for m, _ := range s.sessions {
+	for m := range s.sessions {
 		n++
 		bcast <- n
 

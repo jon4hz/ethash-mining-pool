@@ -1,14 +1,13 @@
 package storage
 
 import (
+	"log"
 	"os"
 	"reflect"
 	"strconv"
 	"testing"
 
 	"gopkg.in/redis.v3"
-
-	"log"
 )
 
 var r *RedisClient
@@ -296,13 +295,13 @@ func TestCollectLuckStats(t *testing.T) {
 	reset()
 
 	members := []redis.Z{
-		redis.Z{Score: 0, Member: "1:0:0x0:0x0:0:100:100:0"},
+		{Score: 0, Member: "1:0:0x0:0x0:0:100:100:0"},
 	}
 	r.client.ZAdd(r.formatKey("blocks:immature"), members...)
 	members = []redis.Z{
-		redis.Z{Score: 1, Member: "1:0:0x2:0x0:0:50:100:0"},
-		redis.Z{Score: 2, Member: "0:1:0x1:0x0:0:100:100:0"},
-		redis.Z{Score: 3, Member: "0:0:0x3:0x0:0:200:100:0"},
+		{Score: 1, Member: "1:0:0x2:0x0:0:50:100:0"},
+		{Score: 2, Member: "0:1:0x1:0x0:0:100:100:0"},
+		{Score: 3, Member: "0:0:0x3:0x0:0:200:100:0"},
 	}
 	r.client.ZAdd(r.formatKey("blocks:matured"), members...)
 
@@ -326,7 +325,6 @@ func TestCollectLuckStats(t *testing.T) {
 
 func TestCollectStats(t *testing.T) {
 	stat, err := r.CollectStats(500000, 100, 100)
-
 	if err != nil {
 		t.Errorf("Result : %v, Err : %v", stat, err)
 	}
@@ -334,7 +332,6 @@ func TestCollectStats(t *testing.T) {
 }
 
 func TestGetMinerStats(t *testing.T) {
-
 	stats := make(map[string]interface{})
 
 	login := "0x5ca87a9e8e132be404a1efb6516665252a74a4e2"
@@ -351,7 +348,7 @@ func TestGetMinerStats(t *testing.T) {
 	})
 
 	if err != nil && err != redis.Nil {
-		t.Errorf("Error :", err)
+		t.Errorf("Error: %s", err)
 	} else {
 		result, _ := cmds[0].(*redis.StringStringMapCmd).Result()
 		stats["stats"] = convertStringMap(result)
@@ -369,13 +366,11 @@ func TestGetMinerStats(t *testing.T) {
 	log.Printf("Result : %v ", stats)
 
 	if err != nil {
-		t.Errorf("Error :", err)
+		t.Errorf("Error: %s", err)
 	}
-
 }
 
 func TestStoreExchangeData(t *testing.T) {
-
 	m := map[string]string{
 		"id":                 "ethereum",
 		"name":               "Ethereum",
@@ -424,29 +419,25 @@ func TestStoreExchangeData(t *testing.T) {
 	defer tx.Close()
 
 	for _, v := range data {
-
 		for k1, v1 := range v {
 			tx.HSet(r.formatKey("exchange", v["symbol"]), k1, v1)
 		}
 	}
-	log.Print("Writing Exchange Data : %v", data)
+	log.Printf("Writing Exchange Data : %v\n", data)
 }
 
 func TestGetExchangeData(t *testing.T) {
-
 	cmd := r.client.HGetAllMap(r.formatKey("exchange", "ETH"))
 	result, err := cmd.Result()
 
 	log.Printf("Writing Exchange Data : %v ", result)
 
 	if err != nil {
-		t.Errorf("Error at GetExchangeData:", err)
+		t.Errorf("Error at GetExchangeData: %s", err)
 	}
-
 }
 
 func TestCreateNewNValue(t *testing.T) {
-
 	result, err := r.CreateNewNValue(4000000000)
 	if err != nil {
 		t.Errorf("Result : %v, Err : %v", result, err)
@@ -455,14 +446,12 @@ func TestCreateNewNValue(t *testing.T) {
 }
 
 func TestGetNetworkDifficultyForCurrentShareDifficulty(t *testing.T) {
-
-	//m ,err  := r.GetNodeStates()
+	// m ,err  := r.GetNodeStates()
 	result, err := r.GetNetworkDifficultyForCurrentShareDifficulty(4000000000)
 	if err != nil {
 		t.Errorf("Result : %v, Err : %v", result, err)
 	}
 	t.Logf("Result : %v", result)
-
 }
 
 func TestGetNetworkDifficulty(t *testing.T) {
@@ -471,7 +460,6 @@ func TestGetNetworkDifficulty(t *testing.T) {
 		t.Errorf("Result : %v, Err :%v", result, err)
 	}
 	t.Logf("Result : %v", result)
-
 }
 
 func TestGetThreshold(t *testing.T) {
@@ -489,17 +477,13 @@ func TestSetThreshold(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error , %v", err)
 	}
-
 }
 
 func TestLogIP(t *testing.T) {
-
 	r.LogIP("0xb9cf2da90bdff1bc014720cc84f5ab99d7974eba", "192.168.00.100")
-
 }
 
 func TestAdjustCurrentNShares(t *testing.T) {
-
 	result, err := r.AdjustCurrentNShares(4000000000)
 	t.Logf("Result : %v", result)
 	if err != nil {
@@ -572,15 +556,12 @@ func TestAdjustCurrentNShares(t *testing.T) {
 		t.Logf("No formatting required")
 	}
 	*/
-
 }
 
 func TestWriteBlock(t *testing.T) {
-
 }
 
 func TestWriteShare(t *testing.T) {
-
 }
 
 func reset() {

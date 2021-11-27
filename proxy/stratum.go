@@ -31,7 +31,7 @@ func (s *ProxyServer) ListenTCP() {
 	defer server.Close()
 
 	log.Printf("Stratum listening on %s", s.config.Proxy.Stratum.Listen)
-	var accept = make(chan int, s.config.Proxy.Stratum.MaxConn)
+	accept := make(chan int, s.config.Proxy.Stratum.MaxConn)
 	n := 0
 
 	for {
@@ -169,8 +169,8 @@ func (cs *Session) sendTCPError(id json.RawMessage, reply *ErrorReply) error {
 	return errors.New(reply.Message)
 }
 
-func (self *ProxyServer) setDeadline(conn *net.TCPConn) {
-	conn.SetDeadline(time.Now().Add(self.timeout))
+func (p *ProxyServer) setDeadline(conn *net.TCPConn) {
+	conn.SetDeadline(time.Now().Add(p.timeout))
 }
 
 func (s *ProxyServer) registerSession(cs *Session) {
@@ -202,7 +202,7 @@ func (s *ProxyServer) broadcastNewJobs() {
 	bcast := make(chan int, 1024)
 	n := 0
 
-	for m, _ := range s.sessions {
+	for m := range s.sessions {
 		n++
 		bcast <- n
 

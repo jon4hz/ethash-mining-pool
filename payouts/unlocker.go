@@ -28,21 +28,27 @@ type UnlockerConfig struct {
 	Timeout        string  `json:"timeout"`
 }
 
-const minDepth = 16
-const byzantiumHardForkHeight = 4370000
-const constantinopleHardForkHeight = 7280000
+const (
+	minDepth                     = 16
+	byzantiumHardForkHeight      = 4370000
+	constantinopleHardForkHeight = 7280000
+)
 
-var homesteadReward = math.MustParseBig256("5000000000000000000")
-var byzantiumReward = math.MustParseBig256("3000000000000000000")
-var constantinopleReward = math.MustParseBig256("2000000000000000000")
+var (
+	homesteadReward      = math.MustParseBig256("5000000000000000000")
+	byzantiumReward      = math.MustParseBig256("3000000000000000000")
+	constantinopleReward = math.MustParseBig256("2000000000000000000")
+)
 
 // Donate 10% from pool fees to developers
-const donationFee = 10.0
-const donationAccount = "0x8ba9Cc92fFFdECFc4eB214E3085Ea2ddF638584E"
+const (
+	donationFee     = 10.0
+	donationAccount = "0x8ba9Cc92fFFdECFc4eB214E3085Ea2ddF638584E"
+)
 
 // Donate 10% from pool fees to etc developers
-//const donationFee2 = 11.1
-//const donationAccount2 = "0x796150b96df22e0097fb57239d6504107b11c430"
+// const donationFee2 = 11.1
+// const donationAccount2 = "0x796150b96df22e0097fb57239d6504107b11c430"
 
 type BlockUnlocker struct {
 	config   *UnlockerConfig
@@ -79,13 +85,10 @@ func (u *BlockUnlocker) Start() {
 	timer.Reset(intv)
 
 	go func() {
-		for {
-			select {
-			case <-timer.C:
-				u.unlockPendingBlocks()
-				u.unlockAndCreditMiners()
-				timer.Reset(intv)
-			}
+		for range timer.C {
+			u.unlockPendingBlocks()
+			u.unlockAndCreditMiners()
+			timer.Reset(intv)
 		}
 	}()
 }
@@ -128,7 +131,7 @@ func (u *BlockUnlocker) unlockCandidates(candidates []*storage.BlockData) (*Unlo
 				return nil, err
 			}
 			if block == nil {
-				return nil, fmt.Errorf("Error while retrieving block %v from node, wrong node height", height)
+				return nil, fmt.Errorf("error while retrieving block %v from node, wrong node height", height)
 			}
 
 			if matchCandidate(block, candidate) {
@@ -154,10 +157,10 @@ func (u *BlockUnlocker) unlockCandidates(candidates []*storage.BlockData) (*Unlo
 			for uncleIndex, uncleHash := range block.Uncles {
 				uncle, err := u.rpc.GetUncleByBlockNumberAndIndex(height, uncleIndex)
 				if err != nil {
-					return nil, fmt.Errorf("Error while retrieving uncle of block %v from node: %v", uncleHash, err)
+					return nil, fmt.Errorf("error while retrieving uncle of block %v from node: %v", uncleHash, err)
 				}
 				if uncle == nil {
-					return nil, fmt.Errorf("Error while retrieving uncle of block %v from node", height)
+					return nil, fmt.Errorf("error while retrieving uncle of block %v from node", height)
 				}
 
 				// Found uncle
@@ -220,7 +223,7 @@ func (u *BlockUnlocker) handleBlock(block *rpc.GetBlockReply, candidate *storage
 	// Add TX fees
 	extraTxReward, err := u.getExtraRewardForTx(block)
 	if err != nil {
-		return fmt.Errorf("Error while fetching TX receipt: %v", err)
+		return fmt.Errorf("error while fetching TX receipt: %v", err)
 	}
 	if u.config.KeepTxFees {
 		candidate.ExtraReward = extraTxReward
@@ -373,7 +376,7 @@ func (u *BlockUnlocker) unlockAndCreditMiners() {
 
 	current, err := u.rpc.GetLatestBlock()
 	if err != nil {
-		//u.halt = true
+		// u.halt = true
 		u.lastFail = err
 		log.Printf("Unable to get current blockchain height from node: %v", err)
 		return
@@ -499,7 +502,7 @@ func (u *BlockUnlocker) calculateRewards(block *storage.BlockData) (*big.Rat, *b
 	}
 
 	if u.config.Donate {
-		var donation = new(big.Rat)
+		var donation *big.Rat
 		poolProfit, donation = chargeFee(poolProfit, donationFee)
 		login := strings.ToLower(donationAccount)
 		rewards[login] += weiToShannonInt64(donation)

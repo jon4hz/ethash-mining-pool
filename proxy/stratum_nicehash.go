@@ -6,12 +6,13 @@ import (
 	"errors"
 	"io"
 	"log"
+	"math/rand"
 	"net"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/ei8ht187/ethash-mining-pool/util"
-	"math/rand"
-	"strings"
 )
 
 func (s *ProxyServer) ListenNiceHashTCP() {
@@ -29,7 +30,7 @@ func (s *ProxyServer) ListenNiceHashTCP() {
 	defer server.Close()
 
 	log.Printf("Stratum NiceHash listening on %s", s.config.Proxy.StratumNiceHash.Listen)
-	var accept = make(chan int, s.config.Proxy.StratumNiceHash.MaxConn)
+	accept := make(chan int, s.config.Proxy.StratumNiceHash.MaxConn)
 	n := 0
 
 	for {
@@ -157,7 +158,7 @@ func (cs *Session) sendJob(s *ProxyServer, id json.RawMessage) error {
 	reply, errReply := s.handleGetWorkRPC(cs)
 	if errReply != nil {
 		return cs.sendTCPNHError(id, []string{
-			string(errReply.Code),
+			strconv.Itoa(errReply.Code),
 			errReply.Message,
 		})
 	}
@@ -211,7 +212,7 @@ func (cs *Session) handleNHTCPMessage(s *ProxyServer, req *StratumReq) error {
 		reply, errReply := s.handleLoginRPC(cs, params, req.Worker)
 		if errReply != nil {
 			return cs.sendTCPNHError(req.Id, []string{
-				string(errReply.Code),
+				strconv.Itoa(errReply.Code),
 				errReply.Message,
 			})
 		}
@@ -253,7 +254,7 @@ func (cs *Session) handleNHTCPMessage(s *ProxyServer, req *StratumReq) error {
 		reply, errReply := s.handleTCPSubmitRPC(cs, id, params)
 		if errReply != nil {
 			return cs.sendTCPNHError(req.Id, []string{
-				string(errReply.Code),
+				strconv.Itoa(errReply.Code),
 				errReply.Message,
 			})
 		}
@@ -302,7 +303,7 @@ func (cs *Session) handleNHTCPMessage(s *ProxyServer, req *StratumReq) error {
 	default:
 		errReply := s.handleUnknownRPC(cs, req.Method)
 		return cs.sendTCPNHError(req.Id, []string{
-			string(errReply.Code),
+			strconv.Itoa(errReply.Code),
 			errReply.Message,
 		})
 	}
@@ -324,7 +325,7 @@ func (s *ProxyServer) broadcastNewJobsNH() {
 	bcast := make(chan int, 1024)
 	n := 0
 
-	for m, _ := range s.sessions {
+	for m := range s.sessions {
 		n++
 		bcast <- n
 

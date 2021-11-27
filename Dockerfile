@@ -1,7 +1,7 @@
 FROM golang:1.17-alpine as builder
 
 RUN apk --no-cache update &&\
-    apk add gcc musl-dev git
+    apk add gcc musl-dev
 
 WORKDIR /go/src/app/ethash-mining-pool
 

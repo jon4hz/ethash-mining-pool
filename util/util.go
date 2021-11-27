@@ -11,12 +11,16 @@ import (
 	"github.com/ethereum/go-ethereum/common/math"
 )
 
-var Ether = math.BigPow(10, 18)
-var Shannon = math.BigPow(10, 9)
+var (
+	Ether   = math.BigPow(10, 18)
+	Shannon = math.BigPow(10, 9)
+)
 
-var pow256 = math.BigPow(2, 256)
-var addressPattern = regexp.MustCompile("^0x[0-9a-fA-F]{40}$")
-var zeroHash = regexp.MustCompile("^0?x?0+$")
+var (
+	pow256         = math.BigPow(2, 256)
+	addressPattern = regexp.MustCompile("^0x[0-9a-fA-F]{40}$")
+	zeroHash       = regexp.MustCompile("^0?x?0+$")
+)
 
 func IsValidHexAddress(s string) bool {
 	if IsZeroHash(s) || !addressPattern.MatchString(s) {

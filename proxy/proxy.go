@@ -49,11 +49,10 @@ type Session struct {
 
 	// Stratum
 	sync.Mutex
-	conn           *net.TCPConn
-	sslconn        net.Conn
-	login          string
-	subscriptionID string
-	JobDeatils     jobDetails
+	conn       *net.TCPConn
+	sslconn    net.Conn
+	login      string
+	JobDeatils jobDetails
 }
 
 func NewProxy(cfg *Config, backend *storage.RedisClient) *ProxyServer {
@@ -102,41 +101,34 @@ func NewProxy(cfg *Config, backend *storage.RedisClient) *ProxyServer {
 	stateUpdateTimer := time.NewTimer(stateUpdateIntv)
 
 	go func() {
-		for {
-			select {
-			case <-refreshTimer.C:
-				proxy.fetchBlockTemplate()
-				refreshTimer.Reset(refreshIntv)
-			}
+		for range refreshTimer.C {
+			proxy.fetchBlockTemplate()
+			refreshTimer.Reset(refreshIntv)
+
 		}
 	}()
 
 	go func() {
-		for {
-			select {
-			case <-checkTimer.C:
-				proxy.checkUpstreams()
-				checkTimer.Reset(checkIntv)
-			}
+		for range checkTimer.C {
+			proxy.checkUpstreams()
+			checkTimer.Reset(checkIntv)
+
 		}
 	}()
 
 	go func() {
-		for {
-			select {
-			case <-stateUpdateTimer.C:
-				t := proxy.currentBlockTemplate()
-				if t != nil {
-					err := backend.WriteNodeState(cfg.Name, t.Height, t.Difficulty)
-					if err != nil {
-						log.Printf("Failed to write node state to backend: %v", err)
-						proxy.markSick()
-					} else {
-						proxy.markOk()
-					}
+		for range stateUpdateTimer.C {
+			t := proxy.currentBlockTemplate()
+			if t != nil {
+				err := backend.WriteNodeState(cfg.Name, t.Height, t.Difficulty)
+				if err != nil {
+					log.Printf("Failed to write node state to backend: %v", err)
+					proxy.markSick()
+				} else {
+					proxy.markOk()
 				}
-				stateUpdateTimer.Reset(stateUpdateIntv)
 			}
+			stateUpdateTimer.Reset(stateUpdateIntv)
 		}
 	}()
 
