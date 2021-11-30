@@ -85,7 +85,7 @@ func (u *BlockUnlocker) Start() {
 	timer.Reset(intv)
 
 	go func() {
-		for range timer.C {
+		for _ = range timer.C {
 			u.unlockPendingBlocks()
 			u.unlockAndCreditMiners()
 			timer.Reset(intv)

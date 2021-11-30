@@ -101,7 +101,7 @@ func NewProxy(cfg *Config, backend *storage.RedisClient) *ProxyServer {
 	stateUpdateTimer := time.NewTimer(stateUpdateIntv)
 
 	go func() {
-		for range refreshTimer.C {
+		for _ = range refreshTimer.C {
 			proxy.fetchBlockTemplate()
 			refreshTimer.Reset(refreshIntv)
 
@@ -109,7 +109,7 @@ func NewProxy(cfg *Config, backend *storage.RedisClient) *ProxyServer {
 	}()
 
 	go func() {
-		for range checkTimer.C {
+		for _ = range checkTimer.C {
 			proxy.checkUpstreams()
 			checkTimer.Reset(checkIntv)
 
@@ -117,7 +117,7 @@ func NewProxy(cfg *Config, backend *storage.RedisClient) *ProxyServer {
 	}()
 
 	go func() {
-		for range stateUpdateTimer.C {
+		for _ = range stateUpdateTimer.C {
 			t := proxy.currentBlockTemplate()
 			if t != nil {
 				err := backend.WriteNodeState(cfg.Name, t.Height, t.Difficulty)
