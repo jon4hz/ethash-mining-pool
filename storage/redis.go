@@ -404,6 +404,11 @@ func (r *RedisClient) WriteBlock(login, id string, params []string, diff, roundD
 			return false, err
 		}
 
+		hashHex := strings.Join(params, ":")
+		s := join(hashHex, ts, roundDiff, totalShares)
+		cmd := r.client.ZAdd(r.formatKey("blocks", "candidates"), redis.Z{Score: float64(height), Member: s})
+		_ = cmd // not sure if can add some error handling here, if not, we can probably remove the variable assignment (but not the complete function)
+		
 		// Calulcate the New 'N' Value  from the current network diffuclty and Store the N the stat table for the Next Round
 		lastN, err := r.CreateNewNValue(diff)
 		if err != nil {

@@ -95,7 +95,7 @@ func (u *PayoutsProcessor) Start() {
 	timer.Reset(intv)
 
 	go func() {
-		for _ = range timer.C {
+		for  range timer.C {
 			u.process()
 			timer.Reset(intv)
 

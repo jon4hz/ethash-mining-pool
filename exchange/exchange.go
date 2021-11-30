@@ -71,7 +71,7 @@ func (u *ExchangeProcessor) Start() {
 	refreshTimer.Reset(refreshIntv)
 
 	go func() {
-		for _ = range refreshTimer.C {
+		for range refreshTimer.C {
 			u.fetchData()
 			refreshTimer.Reset(refreshIntv)
 		}
