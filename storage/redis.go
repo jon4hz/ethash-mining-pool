@@ -952,6 +952,7 @@ func (r *RedisClient) CollectStats(smallWindow time.Duration, maxBlocks, maxPaym
 		tx.ZRevRangeWithScores(r.formatKey("payments", "all"), 0, maxPayments-1)
 		tx.LLen(r.formatKey("lastshares"))
 		tx.HGetAllMap(r.formatKey("exchange", r.CoinName))
+		tx.ZRevRangeWithScores(r.formatKey("finders"), 0, -1)
 		return nil
 	})
 	if err != nil {
@@ -985,7 +986,21 @@ func (r *RedisClient) CollectStats(smallWindow time.Duration, maxBlocks, maxPaym
 	exchangedata, _ := cmds[12].(*redis.StringStringMapCmd).Result()
 	stats["exchangedata"] = exchangedata
 
+	finders := convertFindersResults(cmds[13].(*redis.ZSliceCmd))
+	stats["finders"] = finders
+
 	return stats, nil
+}
+
+func convertFindersResults(raw *redis.ZSliceCmd) []map[string]interface{} {
+	var result []map[string]interface{}
+	for _, v := range raw.Val() {
+		miner := make(map[string]interface{})
+		miner["blocks"] = int64(v.Score)
+		miner["address"] = v.Member.(string)
+		result = append(result, miner)
+	}
+	return result
 }
 
 func (r *RedisClient) CollectWorkersStats(sWindow, lWindow time.Duration, login string) (map[string]interface{}, error) {
